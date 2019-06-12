@@ -8,22 +8,26 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.constraint.solver.widgets.Rectangle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Toast;
 
 import java.util.Random;
 
-public class GameEngine extends SurfaceView implements Runnable {
+public class GameEngine extends SurfaceView implements Runnable, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     // -----------------------------------
     // ## ANDROID DEBUG VARIABLES
     // -----------------------------------
 
     // Android debug variables
-    final static String TAG="JOUST";
-
+    final static String TAG = "JOUST";
+    GestureDetector gestureDetector;
     // -----------------------------------
     // ## SCREEN & DRAWING SETUP VARIABLES
     // -----------------------------------
@@ -49,6 +53,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     int level4;
 
 
+    private GestureDetectorCompat mDetector;
+
 
     // -----------------------------------
     // ## GAME SPECIFIC VARIABLES
@@ -56,8 +62,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     // ----------------------------
     // ## SPRITES
-    // ----------------------------
-
+    // ---------------------------
     // ----------------------------
     // ## GAME STATS - number of lives, score, etc
     // ----------------------------
@@ -66,6 +71,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     public GameEngine(Context context, int w, int h) {
         super(context);
 
+        gestureDetector = new GestureDetector(getContext(), this);
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
@@ -73,9 +79,9 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
-        this.level2 = ((screenHeight/2) - 100);
-        this.level1 = ((screenHeight/4) - 100);
-        this.level3 = (((screenHeight/2) + (screenHeight / 4)) - 100);
+        this.level2 = ((screenHeight / 2) - 100);
+        this.level1 = ((screenHeight / 4) - 100);
+        this.level3 = (((screenHeight / 2) + (screenHeight / 4)) - 100);
         this.level4 = screenHeight - 200;
 
         this.printScreenInfo();
@@ -145,6 +151,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     Paint p;
+
     // 2. Tell Android to DRAW the sprites at their positions
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
@@ -154,24 +161,23 @@ public class GameEngine extends SurfaceView implements Runnable {
             // Put all your drawing code in this section
 
             // configure the drawing tools
-            p=new Paint();
+            p = new Paint();
             //setting background images of canvas
-            Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+            Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
             b = Bitmap.createScaledBitmap(b, screenWidth, screenHeight, false);
             p.setColor(Color.RED);
             canvas.drawBitmap(b, 0, 0, p);
 
             //building levels
             //level image variable
-            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.level);
-            level = Bitmap.createScaledBitmap(level, screenWidth,100,false);
+            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.brick_block);
+            level = Bitmap.createScaledBitmap(level, screenWidth, 100, false);
             p.setColor(Color.GREEN);
             //adding level to canvas
             canvas.drawBitmap(level, 0, level1, p);
             canvas.drawBitmap(level, 0, level2, p);
             canvas.drawBitmap(level, 0, level3, p);
             canvas.drawBitmap(level, 0, level4, p);
-
 
 
             //@TODO: Draw the sprites (rectangle, circle, etc)
@@ -187,8 +193,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void setFPS() {
         try {
             gameThread.sleep(50);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
@@ -197,23 +202,194 @@ public class GameEngine extends SurfaceView implements Runnable {
     // USER INPUT FUNCTIONS
     // ------------------------------
 
-    public int randonLevel(){
+    public int randonLevel() {
         Random r = new Random();
         int level = r.nextInt(4);
-        return (level+1);
+        return (level + 1);
     }
 
 
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        // TODO Auto-generated method stub
+//
+//        return gestureDetector.onTouchEvent(event);
+//    }
+//
+//    @Override
+//    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float velocityX, float velocityY) {
+//        Log.d("Fling Tap", "You Tapped");
+//        if (motionEvent1.getY() - motionEvent2.getY() > 50) {
+//
+//            Log.d("Swipe", "Swipe Up");
+//            Toast.makeText(getContext(), " Swipe Up ", Toast.LENGTH_LONG).show();
+//
+//            return true;
+//        }
+//
+//        if (motionEvent2.getY() - motionEvent1.getY() > 50) {
+//
+//            Log.d("Swipe", "Swipe Down");
+//            Toast.makeText(getContext(), " Swipe Down ", Toast.LENGTH_LONG).show();
+//
+//            return true;
+//        }
+//
+//        if (motionEvent1.getX() - motionEvent2.getX() > 50) {
+//
+//            Log.d("Swipe", "Swipe Left");
+//            Toast.makeText(getContext(), " Swipe Left ", Toast.LENGTH_LONG).show();
+//
+//            return true;
+//        }
+//
+//        if (motionEvent2.getX() - motionEvent1.getX() > 50) {
+//
+//            Log.d("Swipe", "Swipe Right");
+//            Toast.makeText(getContext(), " Swipe Right ", Toast.LENGTH_LONG).show();
+//
+//            return true;
+//        } else {
+//
+//            return true;
+//        }
+//    }
+//
+//
+//    @Override
+//    public void onLongPress(MotionEvent arg0) {
+//        Log.d("Long Tap", "You Tapped");
+//        // TODO Auto-generated method stub
+//
+//    }
+//
+//    @Override
+//    public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
+//        Log.d("Scroll Tap", "You Tapped");
+//        // TODO Auto-generated method stub
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public void onShowPress(MotionEvent arg0) {
+//
+//        // TODO Auto-generated method stub
+//
+//    }
+//
+//    @Override
+//    public boolean onSingleTapUp(MotionEvent arg0) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean onDown(MotionEvent arg0) {
+//        // TODO Auto-generated method stub
+//        Log.d("Single Tap", "You Tapped");
+//        return false;
+//    }
+
+
+    final String DEBUG_TAG="JENELLE";
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int userAction = event.getActionMasked();
-        //@TODO: What should happen when person touches the screen?
-        if (userAction == MotionEvent.ACTION_DOWN) {
-            // user pushed down on screen
+
+
+        if (this.gestureDetector.onTouchEvent(event)) {
+            return true;
         }
-        else if (userAction == MotionEvent.ACTION_UP) {
-            // user lifted their finger
-        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onDown: " + event.toString());
         return true;
     }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2,
+                           float velocityX, float velocityY) {
+        Log.d(DEBUG_TAG, "onFling: " + motionEvent1.toString() + motionEvent2.toString());
+
+
+        if (motionEvent1.getY() - motionEvent2.getY() > 50) {
+
+            Log.d("Swipe", "Swipe Up");
+            Toast.makeText(getContext(), " Swipe Up ", Toast.LENGTH_LONG).show();
+
+            return true;
+        }
+
+        if (motionEvent2.getY() - motionEvent1.getY() > 50) {
+
+            Log.d("Swipe", "Swipe Down");
+            Toast.makeText(getContext(), " Swipe Down ", Toast.LENGTH_LONG).show();
+
+            return true;
+        }
+
+        if (motionEvent1.getX() - motionEvent2.getX() > 50) {
+
+            Log.d("Swipe", "Swipe Left");
+            Toast.makeText(getContext(), " Swipe Left ", Toast.LENGTH_LONG).show();
+
+            return true;
+        }
+
+        if (motionEvent2.getX() - motionEvent1.getX() > 50) {
+
+            Log.d("Swipe", "Swipe Right");
+            Toast.makeText(getContext(), " Swipe Right ", Toast.LENGTH_LONG).show();
+
+            return true;
+        } else {
+
+            return true;
+        }
+    }
+
+    @Override
+    public void onLongPress(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX,
+                            float distanceY) {
+        Log.d(DEBUG_TAG, "onScroll: " + event1.toString() + event2.toString());
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
+        return true;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent event) {
+        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
+        return true;
+    }
+
+
 }
