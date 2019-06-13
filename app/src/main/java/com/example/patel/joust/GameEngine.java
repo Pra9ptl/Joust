@@ -17,6 +17,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class GameEngine extends SurfaceView implements Runnable, GestureDetector.OnGestureListener {
@@ -51,6 +52,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int level2;
     int level3;
     int level4;
+    Sprite demo;
 
 
     private GestureDetectorCompat mDetector;
@@ -60,9 +62,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // ## GAME SPECIFIC VARIABLES
     // -----------------------------------
 
+    //Creating an array to store all enemies
+    ArrayList<Sprite> enemies = new ArrayList<Sprite>();
+    int[] speed = new int[8];
+    int speed_count = 0;
+
     // ----------------------------
     // ## SPRITES
     // ----------------------------
+    Sprite e1;
+
 
     // ----------------------------
     // ## GAME STATS - number of lives, score, etc
@@ -92,6 +101,8 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         //  - setup or configure your sprites
         //  - set the initial position of your sprites
 
+        //cat sprite to get the width and height properties
+        demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
 
         // @TODO: Any other game setup stuff goes here
 
@@ -101,6 +112,19 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // ------------------------------
     // HELPER FUNCTIONS
     // ------------------------------
+
+    // Enemy will be created each time this function is called (xs and ys will be passed randomly
+    public void makeEnemy(int xs, int ys) {
+        e1 = new Sprite(getContext(), xs, ys, R.drawable.cat);
+        enemies.add(e1);
+    }
+
+    public int randonLevel() {
+        Random r = new Random();
+        int level = r.nextInt(4);
+        return (level + 1);
+
+    }
 
     // This funciton prints the screen height & width to the screen.
     private void printScreenInfo() {
@@ -146,19 +170,35 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // 1. Tell Android the (x,y) positions of your sprites
     public void updatePositions() {
         // @TODO: Update the position of the sprites
+        if (enemies.size() > 0) {
+            for (int i = 0; i < enemies.size(); i++) {
+                Sprite t = enemies.get(i);
+                t.setxPosition(t.getxPosition() + speed[i]);
 
+                //Making enemies appear from other side of screen
+                if(t.getxPosition()> this.screenWidth)
+                {
+                    t.setxPosition( - (t.image.getWidth()));
+                }
+
+            }
+        }
         // @TODO: Collision detection code
 
     }
 
     Paint p;
+    long currentTime = 0;
+    long previousTime = 0;
 
     // 2. Tell Android to DRAW the sprites at their positions
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
             this.canvas = this.holder.lockCanvas();
 
-            //----------------
+            //----------------------------------------------------
+            //@TODO: Draw the sprites (rectangle, circle, etc)
+            //----------------------------------------------------
             // Put all your drawing code in this section
 
             // configure the drawing tools
@@ -180,8 +220,54 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             canvas.drawBitmap(level, 0, level3, p);
             canvas.drawBitmap(level, 0, level4, p);
 
+            // ------------------------------
+            // CREATING ENEMIES
+            // ------------------------------
 
-            //@TODO: Draw the sprites (rectangle, circle, etc)
+            //getting level
+            int get_level = randonLevel();
+
+            //keeping track of time
+
+            // get current time
+            currentTime = System.currentTimeMillis();
+
+            if ((currentTime - previousTime) > 2000) {
+
+                //setting random position for the enemies after every 2 seconds (max enemies limit = 8)
+
+                if (enemies.size() < 8) {
+
+                    if (get_level == 1) {
+                        makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
+                                this.level1 - this.demo.image.getHeight());
+                        //setting speed
+                        speed[speed_count] = (int) ((Math.random() * (((20 - 5) + 1)) + 5));
+                    } else if (get_level == 2) {
+                        makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
+                                this.level2 - this.demo.image.getHeight());
+                        speed[speed_count] = (int) ((Math.random() * (((20 - 5) + 1)) + 5));
+                    } else if (get_level == 3) {
+                        makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
+                                this.level3 - this.demo.image.getHeight());
+                        speed[speed_count] = (int) ((Math.random() * (((20 - 5) + 1)) + 5));
+                    } else if (get_level == 4) {
+                        makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
+                                this.level4 - this.demo.image.getHeight());
+                        speed[speed_count] = (int) ((Math.random() * (((20 - 5) + 1)) + 5));
+                    }
+                    speed_count++;
+                }
+                previousTime = currentTime;
+            }
+            //drawing all the enemies from array
+            if (enemies.size() > 0) {
+                for (int i = 0; i < enemies.size(); i++) {
+                    Sprite t = enemies.get(i);
+                    p.setColor(Color.WHITE);
+                    canvas.drawBitmap(t.getImage(), t.getxPosition(), t.getyPosition(), p);
+                }
+            }
 
             //@TODO: Draw game statistics (lives, score, etc)
 
@@ -202,12 +288,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // ------------------------------
     // USER INPUT FUNCTIONS
     // ------------------------------
-
-    public int randonLevel() {
-        Random r = new Random();
-        int level = r.nextInt(4);
-        return (level + 1);
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
