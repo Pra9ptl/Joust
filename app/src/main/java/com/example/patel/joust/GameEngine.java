@@ -53,6 +53,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int level3;
     int level4;
     Sprite demo;
+    Sprite player;
 
 
     private GestureDetectorCompat mDetector;
@@ -100,6 +101,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         // This is optional. Use it to:
         //  - setup or configure your sprites
         //  - set the initial position of your sprites
+
+        //adding player to the engine
+        player = new Sprite(getContext(),100, level4, R.drawable.pikachu);
 
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
@@ -220,6 +224,20 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             canvas.drawBitmap(level, 0, level3, p);
             canvas.drawBitmap(level, 0, level4, p);
 
+            p.setColor(Color.BLACK);
+            p.setStrokeWidth(10);
+            this.canvas.drawLine(0, level4,this.screenWidth,level4, p);
+            // ------------------------------
+            // Creating Player
+            // -----------------------------
+            
+            this.canvas.drawBitmap(this.player.getImage(), 50,(level4-this.player.getImage().getHeight()), p);
+
+            // ------------------------------
+            // End of Player
+            // ------------------------------
+
+
             // ------------------------------
             // CREATING ENEMIES
             // ------------------------------
@@ -268,6 +286,10 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     canvas.drawBitmap(t.getImage(), t.getxPosition(), t.getyPosition(), p);
                 }
             }
+
+            // ------------------------------
+            // End of Enemy
+            // ------------------------------
 
             //@TODO: Draw game statistics (lives, score, etc)
 
