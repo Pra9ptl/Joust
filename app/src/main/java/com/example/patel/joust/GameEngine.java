@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.Random;
 
-public class GameEngine extends SurfaceView implements Runnable, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+public class GameEngine extends SurfaceView implements Runnable, GestureDetector.OnGestureListener {
 
     // -----------------------------------
     // ## ANDROID DEBUG VARIABLES
@@ -62,7 +62,8 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
     // ----------------------------
     // ## SPRITES
-    // ---------------------------
+    // ----------------------------
+
     // ----------------------------
     // ## GAME STATS - number of lives, score, etc
     // ----------------------------
@@ -208,112 +209,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         return (level + 1);
     }
 
-
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        // TODO Auto-generated method stub
-//
-//        return gestureDetector.onTouchEvent(event);
-//    }
-//
-//    @Override
-//    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float velocityX, float velocityY) {
-//        Log.d("Fling Tap", "You Tapped");
-//        if (motionEvent1.getY() - motionEvent2.getY() > 50) {
-//
-//            Log.d("Swipe", "Swipe Up");
-//            Toast.makeText(getContext(), " Swipe Up ", Toast.LENGTH_LONG).show();
-//
-//            return true;
-//        }
-//
-//        if (motionEvent2.getY() - motionEvent1.getY() > 50) {
-//
-//            Log.d("Swipe", "Swipe Down");
-//            Toast.makeText(getContext(), " Swipe Down ", Toast.LENGTH_LONG).show();
-//
-//            return true;
-//        }
-//
-//        if (motionEvent1.getX() - motionEvent2.getX() > 50) {
-//
-//            Log.d("Swipe", "Swipe Left");
-//            Toast.makeText(getContext(), " Swipe Left ", Toast.LENGTH_LONG).show();
-//
-//            return true;
-//        }
-//
-//        if (motionEvent2.getX() - motionEvent1.getX() > 50) {
-//
-//            Log.d("Swipe", "Swipe Right");
-//            Toast.makeText(getContext(), " Swipe Right ", Toast.LENGTH_LONG).show();
-//
-//            return true;
-//        } else {
-//
-//            return true;
-//        }
-//    }
-//
-//
-//    @Override
-//    public void onLongPress(MotionEvent arg0) {
-//        Log.d("Long Tap", "You Tapped");
-//        // TODO Auto-generated method stub
-//
-//    }
-//
-//    @Override
-//    public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
-//        Log.d("Scroll Tap", "You Tapped");
-//        // TODO Auto-generated method stub
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public void onShowPress(MotionEvent arg0) {
-//
-//        // TODO Auto-generated method stub
-//
-//    }
-//
-//    @Override
-//    public boolean onSingleTapUp(MotionEvent arg0) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean onDown(MotionEvent arg0) {
-//        // TODO Auto-generated method stub
-//        Log.d("Single Tap", "You Tapped");
-//        return false;
-//    }
-
-
-    final String DEBUG_TAG="JENELLE";
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // TODO Auto-generated method stub
 
-
-        if (this.gestureDetector.onTouchEvent(event)) {
-            return true;
-        }
-        return super.onTouchEvent(event);
+        return gestureDetector.onTouchEvent(event);
     }
 
     @Override
-    public boolean onDown(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDown: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2,
-                           float velocityX, float velocityY) {
-        Log.d(DEBUG_TAG, "onFling: " + motionEvent1.toString() + motionEvent2.toString());
-
-
+    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float velocityX, float velocityY) {
+        Log.d("Fling Tap", "You Tapped");
         if (motionEvent1.getY() - motionEvent2.getY() > 50) {
 
             Log.d("Swipe", "Swipe Up");
@@ -350,46 +255,39 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         }
     }
 
+
     @Override
-    public void onLongPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+    public void onLongPress(MotionEvent arg0) {
+        Log.d("Long Tap", "You Tapped");
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX,
-                            float distanceY) {
-        Log.d(DEBUG_TAG, "onScroll: " + event1.toString() + event2.toString());
+    public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
+        Log.d("Scroll Tap", "You Tapped");
+        // TODO Auto-generated method stub
+
         return true;
     }
 
     @Override
-    public void onShowPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+    public void onShowPress(MotionEvent arg0) {
+
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+    public boolean onSingleTapUp(MotionEvent arg0) {
         return true;
     }
 
     @Override
-    public boolean onDoubleTap(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+    public boolean onDown(MotionEvent arg0) {
+        // TODO Auto-generated method stub
+        Log.d("Single Tap", "You Tapped");
         return true;
     }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
-        return true;
-    }
-
 
 }
