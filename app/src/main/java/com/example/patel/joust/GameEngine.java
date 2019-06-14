@@ -78,7 +78,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int newY = 0;
     boolean playerUp = false;
     boolean playerDown = false;
-    int lives = 5;
+    int lives = 10;
     int score = 0;
 
 
@@ -227,6 +227,8 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // 1. Tell Android the (x,y) positions of your sprites
     public void updatePositions() {
         // @TODO: Update the position of the sprites
+
+
 
         if (enemies.size() > 0) {
             for (int i = 0; i < enemies.size(); i++) {
@@ -385,6 +387,89 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     long previousTime = 0;
     Sprite t;
 
+    public void youWin(){
+        // huds background
+        p.setStyle(Paint.Style.FILL);
+        // argb == alpha, red, green, blue where alpha is used for transparency
+        p.setColor(Color.argb(250,169, 223, 191));
+
+        // RectF is a function to draw rounded rectangle
+        RectF hudBg = new RectF(
+                10,
+                20,
+                this.screenWidth - 10,
+                this.screenHeight - 20
+        );
+        this.canvas.drawRoundRect(hudBg, 50, 30, p);
+
+        // Text style
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        // Text Color
+        p.setColor(Color.rgb(30, 132, 73));
+        // Text Size
+        p.setTextSize(100);
+        // Text transparency
+        // Displaying Lives Status
+        String lose = "YOU WIN!!!";
+        //Code to find the center of the screen to display text
+        Rect r = new Rect();
+        canvas.getClipBounds(r);
+        int cHeight = r.height();
+        int cWidth = r.width();
+        p.setTextAlign(Paint.Align.LEFT);
+        p.getTextBounds(lose, 0, lose.length(), r);
+        float x = cWidth / 2f - r.width() / 2f - r.left;
+        float y = cHeight / 2f + r.height() / 2f - r.bottom;
+        canvas.drawText(lose, x, y, p);
+    }
+
+    public void youLose() {
+        // huds background
+        p.setStyle(Paint.Style.FILL);
+        // argb == alpha, red, green, blue where alpha is used for transparency
+        p.setColor(Color.argb(250,245, 183, 177));
+
+        // RectF is a function to draw rounded rectangle
+        RectF hudBg = new RectF(
+                10,
+                20,
+                this.screenWidth - 10,
+                this.screenHeight - 20
+        );
+        this.canvas.drawRoundRect(hudBg, 50, 30, p);
+
+        // Text style
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        // Text Color
+        p.setColor(Color.rgb(148, 49, 38));
+        // Text Size
+        p.setTextSize(100);
+        // Text transparency
+        // Displaying Lives Status
+        String lose = "YOU LOSE!!!";
+        //Code to find the center of the screen to display text
+        Rect r = new Rect();
+        canvas.getClipBounds(r);
+        int cHeight = r.height();
+        int cWidth = r.width();
+        p.setTextAlign(Paint.Align.LEFT);
+        p.getTextBounds(lose, 0, lose.length(), r);
+        float x = cWidth / 2f - r.width() / 2f - r.left;
+        float y = cHeight / 2f + r.height() / 2f - r.bottom;
+        canvas.drawText(lose, x, y, p);
+
+
+//
+//        int scoreX = (int) (((hudBg.right - hudBg.left) / 2) - ((p.descent() + p.ascent()) / 2));
+//        int scoreY = (int) ((hudBg.bottom - hudBg.top) / 2);
+//
+//        this.canvas.drawText(lose, scoreX, scoreY, p);
+//        // Calculating Score Text x position
+//        int scoreX = (int) (hudBg.left + ((hudBg.right - hudBg.left) / 2));
+//        // Displaying Lives Status
+//        this.canvas.drawText(("Score: " + score), scoreX, hudBg.bottom-25, p);
+    }
+
     // 2. Tell Android to DRAW the sprites at their positions
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
@@ -501,6 +586,15 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             int scoreX = (int) (hudBg.left + ((hudBg.right - hudBg.left) / 2));
             // Displaying Lives Status
             this.canvas.drawText(("Score: " + score), scoreX, hudBg.bottom-25, p);
+
+
+            if(score >= 10){
+                youWin();
+            }
+
+            if(lives <= 0){
+                youLose();
+            }
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
