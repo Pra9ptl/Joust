@@ -234,9 +234,15 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             if (isMoving == 1) {
                 Log.d("Moving", "Right");
+                if(this.player.getxPosition() >= this.screenWidth){
+                    this.player.setxPosition(0);
+                }
                 this.player.setxPosition(this.player.getxPosition() + 20);
                 Log.d("Moving", "X == " + this.player.getxPosition());
             } else if (isMoving == 2) {
+                if((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0){
+                    this.player.setxPosition(this.screenWidth);
+                }
                 this.player.setxPosition(this.player.getxPosition() - 20);
                 Log.d("Moving", "Left");
                 Log.d("Moving", "X == " + this.player.getxPosition());
