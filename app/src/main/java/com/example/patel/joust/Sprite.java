@@ -30,12 +30,21 @@ public class Sprite {
 
         this.image = BitmapFactory.decodeResource(context.getResources(), imageName);
 
-        this.hitbox = new Rect(
-                this.xPosition,
-                this.yPosition,
-                this.xPosition + this.image.getWidth(),
-                this.yPosition + this.image.getHeight()
-        );
+        if (imageName == R.drawable.cat) {
+            this.hitbox = new Rect(
+                    this.xPosition,
+                    this.yPosition,
+                    this.xPosition + this.image.getWidth(),
+                    this.yPosition + 50
+            );
+        } else if (imageName == R.drawable.pikachu) {
+            this.hitbox = new Rect(
+                    this.xPosition,
+                    this.yPosition + this.image.getHeight() - 50,
+                    this.xPosition + this.image.getWidth(),
+                    this.yPosition + this.image.getHeight()
+            );
+        }
 
     }
 
@@ -72,11 +81,22 @@ public class Sprite {
         this.hitbox = hitbox;
     }
 
-    public void updateHitbox() {
-        this.hitbox.left = this.xPosition;
-        this.hitbox.top = this.yPosition;
-        this.hitbox.right = this.xPosition + this.image.getWidth();
-        this.hitbox.bottom = this.yPosition + this.image.getHeight();
+    public void updateHitbox(int imageName) {
+        if (imageName == R.drawable.cat) {
+            this.hitbox = new Rect(
+                    this.xPosition,
+                    this.yPosition,
+                    this.xPosition + this.image.getWidth(),
+                    this.yPosition + 50
+            );
+        } else if (imageName == R.drawable.pikachu) {
+            this.hitbox = new Rect(
+                    this.xPosition,
+                    this.yPosition + this.image.getHeight() - 50,
+                    this.xPosition + this.image.getWidth(),
+                    this.yPosition + this.image.getHeight()
+            );
+        }
     }
 
     // ---------------------------------
