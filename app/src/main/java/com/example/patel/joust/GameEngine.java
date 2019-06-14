@@ -54,9 +54,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int level2;
     int level3;
     int level4;
-    Sprite demo;
-    Sprite playerHeight;
-    Sprite player;
+    Enemy demo;
+    Player playerHeight;
+    Player player;
     Sprite egg;
     int eggX = 0;
     int eggY = 0;
@@ -67,7 +67,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // -----------------------------------
 
     //Creating an array to store all enemies
-    ArrayList<Sprite> enemies = new ArrayList<Sprite>();
+    ArrayList<Enemy> enemies = new ArrayList<Enemy>();
     ArrayList<Integer> speed = new ArrayList<Integer>();
     ArrayList<Sprite> eggs = new ArrayList<Sprite>();
     ArrayList<Integer> eggTime = new ArrayList<Integer>();
@@ -85,7 +85,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // ----------------------------
     // ## SPRITES
     // ----------------------------
-    Sprite e1;
+    Enemy e1;
 
 
     // ----------------------------
@@ -117,11 +117,11 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         //  - set the initial position of your sprites
 
         //adding player to the engine
-        playerHeight = new Sprite(getContext(),0,0,R.drawable.pikachu);
+        playerHeight = new Player(getContext(),0,0);
 
-        this.player = new Sprite(getContext(), 50, level4 - this.playerHeight.getImage().getHeight(), R.drawable.pikachu);
+        this.player = new Player(getContext(), 50, level4 - this.playerHeight.getImage().getHeight());
         //cat sprite to get the width and height properties
-        demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
+        demo = new Enemy(getContext(), 100, 200);
 
         // @TODO: Any other game setup stuff goes here
 
@@ -134,13 +134,13 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
     // Enemy will be created each time this function is called (xs and ys will be passed randomly
     public void makeEnemy(int xs, int ys) {
-        e1 = new Sprite(getContext(), xs, ys, R.drawable.cat);
+        e1 = new Enemy(getContext(), xs, ys);
         enemies.add(e1);
     }
 
     //Egg will be created each time this function is called (xs and ys will be passed randomly)
     public void makeEgg(int xs, int ys) {
-        egg = new Sprite(getContext(), xs, ys, R.drawable.egg);
+        egg = new Sprite(getContext(), xs, ys, R.drawable.pikachu);
         eggs.add(egg);
     }
 
@@ -232,10 +232,10 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
         if (enemies.size() > 0) {
             for (int i = 0; i < enemies.size(); i++) {
-                Sprite t = enemies.get(i);
+                Enemy t = enemies.get(i);
                 t.setxPosition(t.getxPosition() + speed.get(i));
 
-                t.updateHitbox(R.drawable.cat);
+                t.updateHitbox();
 
                 //Making enemies appear from other side of screen
                 if (t.getxPosition() > this.screenWidth) {
@@ -285,14 +285,14 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                         this.player.setxPosition((0 - this.player.getImage().getWidth()));
                     }
                     this.player.setxPosition(this.player.getxPosition() + 35);
-                    this.player.updateHitbox(R.drawable.pikachu);
+                    this.player.updateHitbox();
                     Log.d("Moving", "X == " + this.player.getxPosition());
                 } else if (isMoving == 2) {
                     if ((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0) {
                         this.player.setxPosition(this.screenWidth);
                     }
                     this.player.setxPosition(this.player.getxPosition() - 35);
-                    this.player.updateHitbox(R.drawable.pikachu);
+                    this.player.updateHitbox();
                     Log.d("Moving", "Left");
                     Log.d("Moving", "X == " + this.player.getxPosition());
 
@@ -357,7 +357,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     this.player.setyPosition(newY);
                     playerUp = false;
                 }
-                this.player.updateHitbox(R.drawable.pikachu);
+                this.player.updateHitbox();
             }
 
             //MOVING PLAYER DOWN
@@ -368,7 +368,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     this.player.setyPosition(newY);
                     playerDown = false;
                 }
-                this.player.updateHitbox(R.drawable.pikachu);
+                this.player.updateHitbox();
             }
 
             // -------------------------------------
@@ -385,7 +385,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     Paint p;
     long currentTime = 0;
     long previousTime = 0;
-    Sprite t;
+    Enemy t;
 
     public void youWin(){
         // huds background
