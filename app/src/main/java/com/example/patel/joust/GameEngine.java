@@ -1,5 +1,6 @@
 package com.example.patel.joust;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -55,6 +56,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     Sprite demo;
     Sprite playerHeight;
     Sprite player;
+    Sprite egg;
+    int eggX = 0;
+    int eggY = 0;
 
 
     private GestureDetectorCompat mDetector;
@@ -66,12 +70,15 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
     //Creating an array to store all enemies
     ArrayList<Sprite> enemies = new ArrayList<Sprite>();
-    int[] speed = new int[8];
+    ArrayList<Integer> speed = new ArrayList<Integer>();
+    ArrayList<Sprite> eggs = new ArrayList<Sprite>();
+    ArrayList<Integer> eggTime = new ArrayList<Integer>();
     int speed_count = 0;
-
+    int eggSpawnTime = 0;
     // setting flag to know on which level the player is
     int playerLevelNumber = 4;
     int isMoving = 0;
+
 
     // ----------------------------
     // ## SPRITES
@@ -111,7 +118,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         playerHeight = new Sprite(getContext(),0,0,R.drawable.pikachu);
 
         this.player = new Sprite(getContext(), 50, level4 - this.playerHeight.getImage().getHeight(), R.drawable.pikachu);
-        Log.d("COOR", "newX == " + this.player.getxPosition() + "newY == " + this.player.getyPosition());
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
 
@@ -130,23 +136,30 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         enemies.add(e1);
     }
 
+    //Egg will be created each time this function is called (xs and ys will be passed randomly)
+    public void makeEgg(int xs, int ys) {
+        egg = new Sprite(getContext(), xs, ys, R.drawable.egg);
+        eggs.add(egg);
+    }
+
     // getting newY coordinate of player while jumping
     public int getNewY(String l){
         Log.d("LevelString",l);
+        int newY = this.level4 - this.playerHeight.getImage().getHeight();;
         if (l.equals("level1")) {
             Log.d("LevelUpdate", "You are on level 1");
-            return this.level1 - this.playerHeight.getImage().getHeight();
+            newY = this.level1 - this.playerHeight.getImage().getHeight();
         } else if (l.equals("level2")) {
             Log.d("LevelUpdate", "You are on level 2");
-            return this.level2 - this.playerHeight.getImage().getHeight();
+            newY = this.level2 - this.playerHeight.getImage().getHeight();
         } else if (l.equals("level3")) {
             Log.d("LevelUpdate", "You are on level 3");
-            return this.level3 - this.playerHeight.getImage().getHeight();
+            newY = this.level3 - this.playerHeight.getImage().getHeight();
         } else if (l.equals("level4")) {
             Log.d("LevelUpdate", "You are on level 4");
-            return this.level4 - this.playerHeight.getImage().getHeight();
+            newY = this.level4 - this.playerHeight.getImage().getHeight();
         }
-        return 4;
+        return newY;
     }
 
     public int randomLevel() {
@@ -215,88 +228,132 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         if (enemies.size() > 0) {
             for (int i = 0; i < enemies.size(); i++) {
                 Sprite t = enemies.get(i);
-                t.setxPosition(t.getxPosition() + speed[i]);
+                t.setxPosition(t.getxPosition() + speed.get(i));
+
+                t.updateHitbox();
 
                 //Making enemies appear from other side of screen
-                if(t.getxPosition()> this.screenWidth)
+                if (t.getxPosition() > this.screenWidth) {
+                    t.setxPosition(-(t.image.getWidth()));
+                }
+
+                // Collision Detection
+
+                if (t.getHitbox().intersect(this.player.getHitbox())) {
+                    eggX = t.getxPosition();
+                    eggY = t.getyPosition();
+
+                    //Creating an egg
+                    makeEgg(eggX, eggY);
+                    eggTime.add((int) System.currentTimeMillis());
+                    //removing enemy and its speed variable from scene
+                    enemies.remove(t);
+                    speed.remove(i);
+                }
+            }
+
+            //Removing egg after 10 seconds and creating cat again
+            for(int i =0; i<eggs.size();i++)
+            {
+                if((int) System.currentTimeMillis() - eggTime.get(i)  > 10000)
                 {
-                    t.setxPosition( - (t.image.getWidth()));
-                }
+                    makeEnemy(eggs.get(i).getxPosition(),eggs.get(i).getyPosition());
+                    speed.add((int) ((Math.random() * (((30 - 9) + 1)) + 9)));
+                    speed_count++;
 
+                    eggs.remove(i);
+                    eggTime.remove(i);
+                }
             }
-        }
 
 
-        if(isMoving != 0) {
-            // -------------------------------------
-            // Moving player right or left side on swipe
-            // -------------------------------------
+            //player control
+            if (isMoving != 0) {
+                // -------------------------------------
+                // Moving player right or left side on swipe
+                // -------------------------------------
 
-            if (isMoving == 1) {
-                Log.d("Moving", "Right");
-                if(this.player.getxPosition() >= this.screenWidth){
-                    this.player.setxPosition(0);
+                if (isMoving == 1) {
+                    Log.d("Moving", "Right");
+                    if (this.player.getxPosition() >= this.screenWidth) {
+                        this.player.setxPosition((0 - this.player.getImage().getWidth()));
+                    }
+                    this.player.setxPosition(this.player.getxPosition() + 20);
+                    Log.d("Moving", "X == " + this.player.getxPosition());
+                } else if (isMoving == 2) {
+                    if ((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0) {
+                        this.player.setxPosition(this.screenWidth);
+                    }
+                    this.player.setxPosition(this.player.getxPosition() - 20);
+                    Log.d("Moving", "Left");
+                    Log.d("Moving", "X == " + this.player.getxPosition());
+
+                    // --------------------------------------
+                    // End of Moving player right or left side on swipe
+                    // --------------------------------------
+
+                    // --------------------------------------
+                    // Jumping to another level
+                    // --------------------------------------
+
+                } else if (isMoving == 3) {
+                    Log.d("Moving", "Up");
+                    if (playerLevelNumber != 1)
+                        playerLevelNumber--;
+                    else
+                        playerLevelNumber = 4;
+
+                    // New coordinates of player
+                    String l = "level" + this.playerLevelNumber;
+                    Log.d("LevelNumber", "" + l);
+                    isMoving = 0;
+                    int newY = getNewY(l);
+                    Log.d("COORD", "// Old Y == " + this.player.getyPosition());
+                    Log.d("COORD", "// New Y == " + newY);
+
+                    // ---
+                    // need code to animate jump
+                    // ---
+
+                    this.player.setyPosition(newY);
+
+                } else if (isMoving == 4) {
+                    Log.d("Moving", "down");
+                    if (playerLevelNumber != 4)
+                        playerLevelNumber++;
+                    else
+                        playerLevelNumber = 1;
+
+                    // New coordinates of player
+                    String l = "level" + this.playerLevelNumber;
+                    Log.d("LevelNumber", "" + l);
+                    isMoving = 0;
+                    int newY = getNewY(l);
+                    Log.d("COORD", "// Old Y == " + this.player.getyPosition());
+                    Log.d("COORD", "// New Y == " + newY);
+
+                    // ---
+                    // need code to animate jump
+                    // ---
+                    this.player.setyPosition(newY);
                 }
-                this.player.setxPosition(this.player.getxPosition() + 20);
-                Log.d("Moving", "X == " + this.player.getxPosition());
-            } else if (isMoving == 2) {
-                if((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0){
-                    this.player.setxPosition(this.screenWidth);
-                }
-                this.player.setxPosition(this.player.getxPosition() - 20);
-                Log.d("Moving", "Left");
-                Log.d("Moving", "X == " + this.player.getxPosition());
-
                 // --------------------------------------
-                // End of Moving player right or left side on swipe
+                // End of jumping to another level
                 // --------------------------------------
-
-                // --------------------------------------
-                // Jumping to another level
-                // --------------------------------------
-
-            } else if (isMoving == 3) {
-                Log.d("Moving", "Up");
-                if(playerLevelNumber != 1)
-                    playerLevelNumber --;
-                else
-                    playerLevelNumber = 4;
-
-                // New coordinates of player
-                int newX = this.player.getxPosition();
-                String l = "level" + this.playerLevelNumber;
-                this.player.setxPosition(newX);
-                this.player.setyPosition(getNewY(l));
-                isMoving = 0;
-            } else if (isMoving == 4){
-                Log.d("Moving", "down");
-                if(playerLevelNumber != 4)
-                    playerLevelNumber ++;
-                else
-                    playerLevelNumber = 1;
-
-                // New coordinates of player
-                int newX = this.player.getxPosition();
-                String l = "level" + this.playerLevelNumber;
-                this.player.setxPosition(newX);
-                this.player.setyPosition(getNewY(l));
-                isMoving = 0;
             }
-            // --------------------------------------
-            // End of jumping to another level
-            // --------------------------------------
+            // -------------------------------------
+            // End of Moving player right or left side on swipe
+            // -------------------------------------
+
+            // @TODO: Collision detection code
+
         }
-        // -------------------------------------
-        // End of Moving player right or left side on swipe
-        // -------------------------------------
-
-        // @TODO: Collision detection code
-
     }
 
     Paint p;
     long currentTime = 0;
     long previousTime = 0;
+    Sprite t;
 
     // 2. Tell Android to DRAW the sprites at their positions
     public void redrawSprites() {
@@ -358,15 +415,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
                             this.randomLevel() - this.demo.image.getHeight());
                     //setting speed for each enemy
-                    speed[speed_count] = (int) ((Math.random() * (((30 - 9) + 1)) + 9));
+                    speed.add((int) ((Math.random() * (((30 - 9) + 1)) + 9)));
                     speed_count++;
                 }
                 previousTime = currentTime;
             }
             //drawing all the enemies from array
+
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
-                    Sprite t = enemies.get(i);
+                     t = enemies.get(i);
                     p.setColor(Color.WHITE);
                     canvas.drawBitmap(t.getImage(), t.getxPosition(), t.getyPosition(), p);
                 }
