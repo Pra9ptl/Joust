@@ -53,6 +53,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int level3;
     int level4;
     Sprite demo;
+    Sprite playerHeight;
     Sprite player;
 
 
@@ -67,6 +68,10 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     ArrayList<Sprite> enemies = new ArrayList<Sprite>();
     int[] speed = new int[8];
     int speed_count = 0;
+
+    // setting flag to know on which level the player is
+    int playerLevelNumber = 4;
+    int isMoving = 0;
 
     // ----------------------------
     // ## SPRITES
@@ -103,7 +108,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         //  - set the initial position of your sprites
 
         //adding player to the engine
-        player = new Sprite(getContext(),100, level4, R.drawable.pikachu);
+        playerHeight = new Sprite(getContext(),0,0,R.drawable.pikachu);
+
+        this.player = new Sprite(getContext(), 50, level4 - this.playerHeight.getImage().getHeight(), R.drawable.pikachu);
 
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
@@ -187,6 +194,34 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             }
         }
+
+        // -------------------------------------
+        // Moving player right or left side on swipe
+        // -------------------------------------
+
+        if(isMoving == 1){
+            Log.d("Moving", "Right");
+            this.player.setxPosition(this.player.getxPosition() + 10);
+            Log.d("Moving", "X == " + this.player.getxPosition());
+        } else if(isMoving == 2) {
+            this.player.setxPosition(this.player.getxPosition() - 10);
+            Log.d("Moving", "Left");
+            Log.d("Moving", "X == " + this.player.getxPosition());
+        }
+
+        // --------------------------------------
+        // Jumping to another level
+        // --------------------------------------
+
+
+        // --------------------------------------
+        // End of jumping to another level
+        // --------------------------------------
+
+        // -------------------------------------
+        // End of Moving player right or left side on swipe
+        // -------------------------------------
+
         // @TODO: Collision detection code
 
     }
@@ -223,15 +258,11 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             canvas.drawBitmap(level, 0, level2, p);
             canvas.drawBitmap(level, 0, level3, p);
             canvas.drawBitmap(level, 0, level4, p);
-
-            p.setColor(Color.BLACK);
-            p.setStrokeWidth(10);
-            this.canvas.drawLine(0, level4,this.screenWidth,level4, p);
             // ------------------------------
             // Creating Player
             // -----------------------------
-            
-            this.canvas.drawBitmap(this.player.getImage(), 50,(level4-this.player.getImage().getHeight()), p);
+
+            this.canvas.drawBitmap(this.player.getImage(), this.player.getxPosition(),this.player.getyPosition(), p);
 
             // ------------------------------
             // End of Player
@@ -325,7 +356,12 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Up");
             Toast.makeText(getContext(), " Swipe Up ", Toast.LENGTH_LONG).show();
-
+            if(playerLevelNumber >= 1) {
+                playerLevelNumber = playerLevelNumber - 1;
+            } else {
+                playerLevelNumber = 4;
+            }
+            isMoving = 0;
             return true;
         }
 
@@ -333,7 +369,12 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Down");
             Toast.makeText(getContext(), " Swipe Down ", Toast.LENGTH_LONG).show();
-
+            if(playerLevelNumber <= 4) {
+                playerLevelNumber = playerLevelNumber + 1;
+            } else {
+                playerLevelNumber = 1;
+            }
+            isMoving = 0;
             return true;
         }
 
@@ -341,7 +382,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Left");
             Toast.makeText(getContext(), " Swipe Left ", Toast.LENGTH_LONG).show();
-
+            isMoving = 2;
             return true;
         }
 
@@ -349,7 +390,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Right");
             Toast.makeText(getContext(), " Swipe Right ", Toast.LENGTH_LONG).show();
-
+            isMoving = 1;
             return true;
         } else {
 
