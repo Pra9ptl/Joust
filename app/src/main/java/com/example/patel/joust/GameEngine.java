@@ -130,6 +130,25 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         enemies.add(e1);
     }
 
+    // getting newY coordinate of player while jumping
+    public int getNewY(String l){
+        Log.d("LevelString",l);
+        if (l.equals("level1")) {
+            Log.d("LevelUpdate", "You are on level 1");
+            return this.level1 - this.playerHeight.getImage().getHeight();
+        } else if (l.equals("level2")) {
+            Log.d("LevelUpdate", "You are on level 2");
+            return this.level2 - this.playerHeight.getImage().getHeight();
+        } else if (l.equals("level3")) {
+            Log.d("LevelUpdate", "You are on level 3");
+            return this.level3 - this.playerHeight.getImage().getHeight();
+        } else if (l.equals("level4")) {
+            Log.d("LevelUpdate", "You are on level 4");
+            return this.level4 - this.playerHeight.getImage().getHeight();
+        }
+        return 4;
+    }
+
     public int randomLevel() {
         Random r = new Random();
         int level = r.nextInt(4);
@@ -239,25 +258,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
                 // New coordinates of player
                 int newX = this.player.getxPosition();
-                int newY = 0;
                 String l = "level" + this.playerLevelNumber;
-                Log.d("LevelString",l);
-                if (l.equals("level1")) {
-                    Log.d("LevelUpdate", "You are on level 1");
-                    newY = this.level1 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level2")) {
-                    Log.d("LevelUpdate", "You are on level 2");
-                    newY = this.level2 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level3")) {
-                    Log.d("LevelUpdate", "You are on level 3");
-                    newY = this.level3 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level4")) {
-                    Log.d("LevelUpdate", "You are on level 4");
-                    newY = this.level4 - this.playerHeight.getImage().getHeight();
-                }
-                Log.d("COOR", "newX == " + newX + "newY == " + newY);
                 this.player.setxPosition(newX);
-                this.player.setyPosition(newY);
+                this.player.setyPosition(getNewY(l));
                 isMoving = 0;
             } else if (isMoving == 4){
                 Log.d("Moving", "down");
@@ -268,26 +271,9 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
                 // New coordinates of player
                 int newX = this.player.getxPosition();
-                int newY = 0;
                 String l = "level" + this.playerLevelNumber;
-                Log.d("Level String",l);
-                if (l.equals("level1")) {
-                    Log.d("LevelUpdate", "You are on level 1");
-                    newY = this.level1 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level2")) {
-                    Log.d("LevelUpdate", "You are on level 2");
-                    newY = this.level2 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level3")) {
-                    Log.d("LevelUpdate", "You are on level 3");
-                    newY = this.level3 - this.playerHeight.getImage().getHeight();
-                } else if (l.equals("level4")) {
-                    Log.d("LevelUpdate", "You are on level 4");
-                    newY = this.level4 - this.playerHeight.getImage().getHeight();
-                }
-
-                Log.d("COOR", "newX == " + newX + "newY == " + newY);
                 this.player.setxPosition(newX);
-                this.player.setyPosition(newY);
+                this.player.setyPosition(getNewY(l));
                 isMoving = 0;
             }
             // --------------------------------------
