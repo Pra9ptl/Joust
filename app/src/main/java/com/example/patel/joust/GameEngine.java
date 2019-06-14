@@ -111,7 +111,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         playerHeight = new Sprite(getContext(),0,0,R.drawable.pikachu);
 
         this.player = new Sprite(getContext(), 50, level4 - this.playerHeight.getImage().getHeight(), R.drawable.pikachu);
-
+        Log.d("COOR", "newX == " + this.player.getxPosition() + "newY == " + this.player.getyPosition());
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
 
@@ -195,29 +195,102 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             }
         }
 
-        // -------------------------------------
-        // Moving player right or left side on swipe
-        // -------------------------------------
 
-        if(isMoving == 1){
-            Log.d("Moving", "Right");
-            this.player.setxPosition(this.player.getxPosition() + 10);
-            Log.d("Moving", "X == " + this.player.getxPosition());
-        } else if(isMoving == 2) {
-            this.player.setxPosition(this.player.getxPosition() - 10);
-            Log.d("Moving", "Left");
-            Log.d("Moving", "X == " + this.player.getxPosition());
+        if(isMoving != 0) {
+            // -------------------------------------
+            // Moving player right or left side on swipe
+            // -------------------------------------
+
+            if (isMoving == 1) {
+                Log.d("Moving", "Right");
+                this.player.setxPosition(this.player.getxPosition() + 10);
+                Log.d("Moving", "X == " + this.player.getxPosition());
+            } else if (isMoving == 2) {
+                this.player.setxPosition(this.player.getxPosition() - 10);
+                Log.d("Moving", "Left");
+                Log.d("Moving", "X == " + this.player.getxPosition());
+            } else if (isMoving == 3) {
+                Log.d("Moving", "Up");
+                if(playerLevelNumber != 1)
+                    playerLevelNumber --;
+                else
+                    playerLevelNumber = 4;
+
+                // New coordinates of player
+                int newX = this.player.getxPosition();
+                int newY = 0;
+                String l = "level" + this.playerLevelNumber;
+                Log.d("LevelString",l);
+                if (l.equals("level1")) {
+                    Log.d("LevelUpdate", "You are on level 1");
+                    newY = this.level1 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level2")) {
+                    Log.d("LevelUpdate", "You are on level 2");
+                    newY = this.level2 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level3")) {
+                    Log.d("LevelUpdate", "You are on level 3");
+                    newY = this.level3 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level4")) {
+                    Log.d("LevelUpdate", "You are on level 4");
+                    newY = this.level4 - this.playerHeight.getImage().getHeight();
+                }
+                Log.d("COOR", "newX == " + newX + "newY == " + newY);
+                this.player.setxPosition(newX);
+                this.player.setyPosition(newY);
+                isMoving = 0;
+            } else if (isMoving == 4){
+                Log.d("Moving", "down");
+                if(playerLevelNumber != 4)
+                    playerLevelNumber ++;
+                else
+                    playerLevelNumber = 1;
+
+                // New coordinates of player
+                int newX = this.player.getxPosition();
+                int newY = 0;
+                String l = "level" + this.playerLevelNumber;
+                Log.d("Level String",l);
+                if (l.equals("level1")) {
+                    Log.d("LevelUpdate", "You are on level 1");
+                    newY = this.level1 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level2")) {
+                    Log.d("LevelUpdate", "You are on level 2");
+                    newY = this.level2 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level3")) {
+                    Log.d("LevelUpdate", "You are on level 3");
+                    newY = this.level3 - this.playerHeight.getImage().getHeight();
+                } else if (l.equals("level4")) {
+                    Log.d("LevelUpdate", "You are on level 4");
+                    newY = this.level4 - this.playerHeight.getImage().getHeight();
+                }
+
+                Log.d("COOR", "newX == " + newX + "newY == " + newY);
+                this.player.setxPosition(newX);
+                this.player.setyPosition(newY);
+                isMoving = 0;
+            }
+
+            // --------------------------------------
+            // Jumping to another level
+            // --------------------------------------
+
+
+            /*
+            if (l == "level1") {
+                newY = this.level1 - this.playerHeight.getImage().getHeight();
+            } else if (l == "level2") {
+                newY = this.level2 - this.playerHeight.getImage().getHeight();
+            } else if (l == "level3") {
+                newY = this.level3 - this.playerHeight.getImage().getHeight();
+            } else if (l == "level4") {
+                newY = this.level4 - this.playerHeight.getImage().getHeight();
+            }
+*/
+
+            // --------------------------------------
+            // End of jumping to another level
+            // --------------------------------------
         }
-
-        // --------------------------------------
-        // Jumping to another level
-        // --------------------------------------
-
-
-        // --------------------------------------
-        // End of jumping to another level
-        // --------------------------------------
-
         // -------------------------------------
         // End of Moving player right or left side on swipe
         // -------------------------------------
@@ -356,12 +429,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Up");
             Toast.makeText(getContext(), " Swipe Up ", Toast.LENGTH_LONG).show();
-            if(playerLevelNumber >= 1) {
-                playerLevelNumber = playerLevelNumber - 1;
-            } else {
-                playerLevelNumber = 4;
-            }
-            isMoving = 0;
+            isMoving = 3;
             return true;
         }
 
@@ -369,12 +437,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("Swipe", "Swipe Down");
             Toast.makeText(getContext(), " Swipe Down ", Toast.LENGTH_LONG).show();
-            if(playerLevelNumber <= 4) {
-                playerLevelNumber = playerLevelNumber + 1;
-            } else {
-                playerLevelNumber = 1;
-            }
-            isMoving = 0;
+            isMoving = 4;
             return true;
         }
 
