@@ -30,21 +30,12 @@ public class Sprite {
 
         this.image = BitmapFactory.decodeResource(context.getResources(), imageName);
 
-        if (imageName == R.drawable.cat) {
-            this.hitbox = new Rect(
-                    this.xPosition + 50,
-                    this.yPosition,
-                    (this.xPosition + this.image.getWidth()) - 50,
-                    this.yPosition + 50
-            );
-        } else if (imageName == R.drawable.pikachu) {
-            this.hitbox = new Rect(
-                    this.xPosition + 50,
-                    this.yPosition + this.image.getHeight() - 50,
-                    (this.xPosition + this.image.getWidth()) - 50,
-                    this.yPosition + this.image.getHeight()
-            );
-        }
+        this.hitbox = new Rect(
+                this.xPosition,
+                this.yPosition,
+                this.xPosition + this.image.getWidth(),
+                this.yPosition + this.image.getHeight()
+        );
 
     }
 
@@ -81,24 +72,12 @@ public class Sprite {
         this.hitbox = hitbox;
     }
 
-    public void updateHitbox(int imageName) {
-        if (imageName == R.drawable.cat) {
-            this.hitbox = new Rect(
-                    this.xPosition + 50,
-                    this.yPosition,
-                    (this.xPosition + this.image.getWidth()) - 50,
-                    this.yPosition + 50
-            );
-        } else if (imageName == R.drawable.pikachu) {
-            this.hitbox = new Rect(
-                    this.xPosition +50,
-                    this.yPosition + this.image.getHeight() - 50,
-                    (this.xPosition + this.image.getWidth()) -50,
-                    this.yPosition + this.image.getHeight()
-            );
-        }
+    public void updateHitbox() {
+        this.hitbox.left = this.xPosition;
+        this.hitbox.top = this.yPosition;
+        this.hitbox.right = this.xPosition + this.image.getWidth();
+        this.hitbox.bottom = this.yPosition + this.image.getHeight();
     }
-
 
     // ---------------------------------
     // gets or sets the (x,y) position of the sprite

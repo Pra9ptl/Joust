@@ -14,7 +14,8 @@ public class Enemy {
     Bitmap image;
 
     // make the hitbox
-    Rect hitbox;
+    Rect bodyHitbox;
+    Rect headHitbox;
 
 
     // vector variables
@@ -30,11 +31,18 @@ public class Enemy {
 
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.cat);
 
-        this.hitbox = new Rect(
-                this.xPosition,
+        this.headHitbox = new Rect(
+                this.xPosition + 50,
                 this.yPosition,
-                this.xPosition + this.image.getWidth(),
+                this.xPosition + this.image.getWidth() - 50,
                 this.yPosition + 50
+        );
+
+        this.bodyHitbox = new Rect(
+                this.xPosition,
+                this.yPosition + 55,
+                this.xPosition + this.image.getWidth(),
+                this.yPosition + this.image.getHeight()
         );
 
     }
@@ -64,19 +72,34 @@ public class Enemy {
     // gets, sets, or updates the hitbox
     // ---------------------------------
 
-    public Rect getHitbox() {
-        return hitbox;
+    public Rect getHeadHitbox() {
+        return headHitbox;
     }
 
-    public void setHitbox(Rect hitbox) {
-        this.hitbox = hitbox;
+    public void setHeadHitbox(Rect hitbox) {
+        this.headHitbox = hitbox;
     }
 
-    public void updateHitbox() {
-        this.hitbox.left = this.xPosition;
-        this.hitbox.top = this.yPosition;
-        this.hitbox.right = this.xPosition + this.image.getWidth();
-        this.hitbox.bottom = this.yPosition + 50;
+    public Rect getBodyHitbox() {
+        return bodyHitbox;
+    }
+
+    public void setBodyHitbox(Rect bodyHitbox) {
+        this.bodyHitbox = bodyHitbox;
+    }
+
+    public void updateHeadHitbox() {
+        this.headHitbox.left = this.xPosition + 50;
+        this.headHitbox.top = this.yPosition;
+        this.headHitbox.right = this.xPosition + this.image.getWidth() - 50;
+        this.headHitbox.bottom = this.yPosition + 50;
+    }
+
+    public void updateBodyHitbox() {
+        this.bodyHitbox.left = this.xPosition;
+        this.bodyHitbox.top = this.yPosition + 55;
+        this.bodyHitbox.right = this.xPosition + this.image.getWidth();
+        this.bodyHitbox.bottom = this.yPosition + this.image.getHeight();
     }
 
     // ---------------------------------

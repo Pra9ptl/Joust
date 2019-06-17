@@ -14,7 +14,8 @@ public class Player {
     Bitmap image;
 
     // make the hitbox
-    Rect hitbox;
+    Rect hitboxBottom;
+    Rect hitboxTop;
 
 
     // vector variables
@@ -24,22 +25,32 @@ public class Player {
 
 
 
-    public Player(Context context, int x, int y) {
+    public Player(Context context, int x, int y, int imageName) {
         this.xPosition = x;
         this.yPosition = y;
 
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.pikachu);
 
-        this.hitbox = new Rect(
-                this.xPosition,
+        this.hitboxBottom = new Rect(
+                this.xPosition + 80,
                 this.yPosition + this.image.getHeight() - 50,
-                this.xPosition + this.image.getWidth(),
+                this.xPosition + this.image.getWidth() - 80,
                 this.yPosition + this.image.getHeight()
+
+
+        );
+
+        this.hitboxTop = new Rect(
+                this.xPosition + 80,
+                this.yPosition + this.image.getHeight() - 180,
+                this.xPosition + this.image.getWidth() - 80,
+                this.yPosition + this.image.getHeight() -200
         );
 
     }
 
-    // ---------------------------------
+
+// ---------------------------------
     // sets or gets the xd variable for this sprite
     // ---------------------------------
 
@@ -64,21 +75,35 @@ public class Player {
     // gets, sets, or updates the hitbox
     // ---------------------------------
 
-    public Rect getHitbox() {
-        return hitbox;
+    public Rect getHitboxBottom() {
+        return hitboxBottom;
     }
 
-    public void setHitbox(Rect hitbox) {
-        this.hitbox = hitbox;
+    public void setHitboxBottom(Rect hitbox) {
+        this.hitboxBottom = hitbox;
     }
 
-    public void updateHitbox() {
-        this.hitbox.left = this.xPosition;
-        this.hitbox.top = this.yPosition + this.image.getHeight() - 50;
-        this.hitbox.right = this.xPosition + this.image.getWidth();
-        this.hitbox.bottom = this.yPosition + this.image.getHeight();
+    public void updateHitboxBottom() {
+        this.hitboxBottom.left = this.xPosition + 80;
+        this.hitboxBottom.top = this.yPosition + this.image.getHeight() - 50;
+        this.hitboxBottom.right = this.xPosition + this.image.getWidth() - 80 ;
+        this.hitboxBottom.bottom = this.yPosition + this.image.getHeight();
     }
 
+    public Rect getHitboxTop() {
+        return hitboxTop;
+    }
+
+    public void setHitboxTop(Rect hitboxTop) {
+        this.hitboxTop = hitboxTop;
+    }
+
+    public void updateHitBoxTop() {
+        this.hitboxTop.left = this.xPosition + 80;
+        this.hitboxTop.top = this.yPosition + this.image.getHeight() - 180;
+        this.hitboxTop.right = this.xPosition + this.image.getWidth() - 80;
+        this.hitboxTop.bottom = this.yPosition + this.image.getHeight() - 200;
+    }
     // ---------------------------------
     // gets or sets the (x,y) position of the sprite
     // ---------------------------------
