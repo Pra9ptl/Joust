@@ -56,7 +56,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int eggX = 0;
     int eggY = 0;
     Sprite demo;
-    Sprite dog;
     Sprite egg;
     Sprite eggDemo;
     Sounds sound;
@@ -120,7 +119,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
-        dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.pikachu);
+        //dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.pikachu);
         eggDemo = new Sprite(getContext(),0,0,R.drawable.egg);
         //creating instance of Sounds class
         sound = new Sounds(context);
@@ -344,7 +343,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 if(t.getHitbox().intersect(this.player.getHitboxBottom()))
                 {
                     eggX = t.getxPosition();
-                    eggY = t.getyPosition() - egg.image.getHeight();
+                    eggY = t.getyPosition() - 32;
 
                     //Making Egg Appear randomly
                     sound.getEnemyDie();
@@ -356,6 +355,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     //removing enemy and its speed variable from scene
                     enemies.remove(t);
                     speed.remove(i);
+                }
+
+                if(t.getHitbox().intersect(this.player.getHitboxTop())){
+                    lives--;
+                    Log.d("Intersects", "You got Hit");
+                    this.player.setxPosition(50);
+                    this.player.setyPosition(level4 - this.playerHeight.getImage().getHeight());
+                    this.player.updateHitboxBottom();
+                    this.player.updateHitBoxTop();
+                    isMoving = 0;
                 }
             }
 
@@ -372,15 +381,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     eggTime.remove(i);
                 }
             }
-
-            //MOVING DOG (TEMP CODE)
-            dog.setxPosition(dog.getxPosition() + 20);
-            if(dog.getxPosition()> this.screenWidth)
-            {
-                dog.setxPosition( - (dog.image.getWidth()));
-            }
-            dog.updateHitbox();
-
         }
 
         //player control
@@ -394,7 +394,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 if (this.player.getxPosition() >= this.screenWidth) {
                     this.player.setxPosition((0 - this.player.getImage().getWidth()));
                 }
-                this.player.setxPosition(this.player.getxPosition() + 20);
+                this.player.setxPosition(this.player.getxPosition() + 50);
                 this.player.updateHitboxBottom();
                 this.player.updateHitBoxTop();
                 Log.d("Moving", "X == " + this.player.getxPosition());
@@ -402,7 +402,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 if ((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0) {
                     this.player.setxPosition(this.screenWidth);
                 }
-                this.player.setxPosition(this.player.getxPosition() - 20);
+                this.player.setxPosition(this.player.getxPosition() - 50);
                 this.player.updateHitboxBottom();
                 this.player.updateHitBoxTop();
                 Log.d("Moving", "Left");
@@ -467,18 +467,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         if(this.player.getyPosition() != newY && playerUp == true)
         {
 
-            this.player.setyPosition(this.player.getyPosition() - 250);
-            if(this.player.getyPosition() + this.player.image.getHeight() <= 0){
-                this.player.setyPosition(this.screenHeight + this.player.image.getHeight());
-                if(this.player.getyPosition() <= newY){
+            Log.d("LevelNumber", " level = " + playerLevelNumber);
+
+
+                if (this.player.getyPosition() >= newY) {
+                    this.player.setyPosition(this.player.getyPosition() - 100);
+                } else {
                     this.player.setyPosition(newY);
                     playerUp = false;
                 }
-            }
-//            if(this.player.getyPosition() <= newY){
-//                this.player.setyPosition(newY);
-//                playerUp = false;
-//            }
+
             this.player.updateHitboxBottom();
             this.player.updateHitBoxTop();
         }
@@ -486,15 +484,21 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         //MOVING PLAYER DOWN
         if(this.player.getyPosition() != newY && playerDown == true)
         {
-            this.player.setyPosition(this.player.getyPosition() + 250);
-            if(this.player.getyPosition() >= this.screenHeight){
-                this.player.setyPosition(0 - this.player.image.getHeight());
-            }
-//            if(this.player.getyPosition() >= newY){
-//                this.player.setyPosition(newY);
-//                playerDown = false;
-//            }
 
+
+            Log.d("LevelNumber", " level = " + playerLevelNumber);
+
+                if (this.player.getyPosition() <= newY) {
+                    this.player.setyPosition(this.player.getyPosition() + 100);
+                }
+                else if(this.player.getyPosition() > newY){
+                    this.player.setyPosition(0);
+                    this.player.setyPosition(this.player.getyPosition() + 100);
+                }
+                     if((this.player.getyPosition() >=0) && (this.player.getyPosition() >= newY) ) {
+                    this.player.setyPosition(newY);
+                    playerDown = false;
+                }
             this.player.updateHitboxBottom();
             this.player.updateHitBoxTop();
         }
@@ -603,8 +607,8 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             // ------------------------------
             // CREATING DOG
             // ------------------------------
-            canvas.drawBitmap(dog.getImage(),dog.getxPosition(),dog.getyPosition(),p);
-            canvas.drawRect(dog.getHitbox(),p);
+//            canvas.drawBitmap(dog.getImage(),dog.getxPosition(),dog.getyPosition(),p);
+//            canvas.drawRect(dog.getHitbox(),p);
 
             //CREATING EGGS
             for(int i =0; i< eggs.size(); i++) {
