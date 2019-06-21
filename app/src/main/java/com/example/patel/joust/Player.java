@@ -41,9 +41,9 @@ public class Player {
         );
 
         this.hitboxTop = new Rect(
-                this.xPosition + 80,
-                this.yPosition + this.image.getHeight() - 180,
-                this.xPosition + this.image.getWidth() - 80,
+                this.xPosition,
+                this.yPosition,
+                this.xPosition + this.image.getWidth(),
                 this.yPosition + this.image.getHeight() -200
         );
 
@@ -99,9 +99,9 @@ public class Player {
     }
 
     public void updateHitBoxTop() {
-        this.hitboxTop.left = this.xPosition + 80;
-        this.hitboxTop.top = this.yPosition + this.image.getHeight() - 180;
-        this.hitboxTop.right = this.xPosition + this.image.getWidth() - 80;
+        this.hitboxTop.left = this.xPosition;
+        this.hitboxTop.top = this.yPosition;
+        this.hitboxTop.right = this.xPosition + this.image.getWidth();
         this.hitboxTop.bottom = this.yPosition + this.image.getHeight() - 200;
     }
     // ---------------------------------
