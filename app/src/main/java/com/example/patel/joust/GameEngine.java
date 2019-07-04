@@ -1,6 +1,7 @@
 package com.example.patel.joust;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
     // Android debug variables
     final static String TAG = "JOUST";
-
     // -----------------------------------
     // ## SCREEN & DRAWING SETUP VARIABLES
     // -----------------------------------
@@ -56,6 +57,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int eggX = 0;
     int eggY = 0;
     Sprite demo;
+    Sprite dog;
     Sprite egg;
     Sprite eggDemo;
     Sounds sound;
@@ -78,8 +80,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int newY = 0;
     Boolean playerUp = false;
     Boolean playerDown = false;
-    int lives = 5;
-    int score = 0;
     // ----------------------------
     // ## SPRITES
     // ----------------------------
@@ -87,7 +87,8 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     // ----------------------------
     // ## GAME STATS - number of lives, score, etc
     // ----------------------------
-
+    int lives = 5;
+    int score = 0;
 
     public GameEngine(Context context, int w, int h) {
         super(context);
@@ -119,7 +120,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
-        //dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.pikachu);
+        dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.dogbig);
         eggDemo = new Sprite(getContext(),0,0,R.drawable.egg);
         //creating instance of Sounds class
         sound = new Sounds(context);
@@ -178,9 +179,11 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         Random r = new Random();
         int level = r.nextInt(4);
         level = level + 1;
+
         if (level == 1) {
             return this.level1;
-        } else if (level == 2) {
+        }
+        else if (level == 2) {
             return this.level2;
         }
         else if (level == 3) {
@@ -191,49 +194,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         }
         return 0;
     }
-
-
-    // This funciton prints the screen height & width to the screen.
-    private void printScreenInfo() {
-
-        Log.d(TAG, "Screen (w, h) = " + this.screenWidth + "," + this.screenHeight);
-    }
-
-
-    // ------------------------------
-    // GAME STATE FUNCTIONS (run, stop, start)
-    // ------------------------------
-    @Override
-    public void run() {
-        while (gameIsRunning == true) {
-            this.updatePositions();
-            this.redrawSprites();
-            this.setFPS();
-        }
-    }
-
-
-    public void pauseGame() {
-        gameIsRunning = false;
-        try {
-            gameThread.join();
-        } catch (InterruptedException e) {
-            // Error
-        }
-    }
-
-    public void startGame() {
-
-        gameIsRunning = true;
-        gameThread = new Thread(this);
-        gameThread.start();
-    }
-
-
-    // ------------------------------
-    // GAME ENGINE FUNCTIONS
-    // - update, draw, setFPS
-    // ------------------------------
 
     public void youWin(){
         // huds background
@@ -306,17 +266,50 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         float y = cHeight / 2f + r.height() / 2f - r.bottom;
         canvas.drawText(lose, x, y, p);
 
-
-        //
-//        int scoreX = (int) (((hudBg.right - hudBg.left) / 2) - ((p.descent() + p.ascent()) / 2));
-//        int scoreY = (int) ((hudBg.bottom - hudBg.top) / 2);
-//
-//        this.canvas.drawText(lose, scoreX, scoreY, p);
-//        // Calculating Score Text x position
-//        int scoreX = (int) (hudBg.left + ((hudBg.right - hudBg.left) / 2));
-//        // Displaying Lives Status
-//        this.canvas.drawText(("Score: " + score), scoreX, hudBg.bottom-25, p);
     }
+
+
+    // This funciton prints the screen height & width to the screen.
+    private void printScreenInfo() {
+
+        Log.d(TAG, "Screen (w, h) = " + this.screenWidth + "," + this.screenHeight);
+    }
+
+
+    // ------------------------------
+    // GAME STATE FUNCTIONS (run, stop, start)
+    // ------------------------------
+    @Override
+    public void run() {
+        while (gameIsRunning == true) {
+            this.updatePositions();
+            this.redrawSprites();
+            this.setFPS();
+        }
+    }
+
+
+    public void pauseGame() {
+        gameIsRunning = false;
+        try {
+            gameThread.join();
+        } catch (InterruptedException e) {
+            // Error
+        }
+    }
+
+    public void startGame() {
+
+        gameIsRunning = true;
+        gameThread = new Thread(this);
+        gameThread.start();
+    }
+
+
+    // ------------------------------
+    // GAME ENGINE FUNCTIONS
+    // - update, draw, setFPS
+    // ------------------------------
 
     // 1. Tell Android the (x,y) positions of your sprites
     public void updatePositions() {
@@ -325,7 +318,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
 
         //updating enemy positions
-        if (enemies.size() > 0) {
+        if (enemies.size() > 0 || eggs.size() > 0 ) {
             for (int i = 0; i < enemies.size(); i++) {
                 Sprite t = enemies.get(i);
                 t.setxPosition(t.getxPosition() + speed.get(i));
@@ -340,10 +333,31 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
                 // Collision Detection
 
+
+                //detecting when enemy touches player
+                if(t.getHitbox().intersect(this.player.getHitboxTop()))
+                {
+                    if((player.getyPosition() != level4 - this.playerHeight.getImage().getHeight()) || (player.getxPosition() != 50)) {
+                        lives--;
+                        isMoving = 0;
+                        playerLevelNumber = 4;
+                        sound.getPlayerDie();
+                        playerUp = false;
+                        playerDown = false;
+                        player.setxPosition(50);
+                        player.setyPosition(level4 - this.playerHeight.getImage().getHeight());
+                        player.updateHitBoxTop();
+                        player.updateHitboxBottom();
+                    }
+
+                }
+
+                //detecting when plyer jumps on enemy
                 if(t.getHitbox().intersect(this.player.getHitboxBottom()))
                 {
+
                     eggX = t.getxPosition();
-                    eggY = t.getyPosition() - 32;
+                    eggY = t.getyPosition();
 
                     //Making Egg Appear randomly
                     sound.getEnemyDie();
@@ -357,20 +371,27 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     speed.remove(i);
                 }
 
-                if(t.getHitbox().intersect(this.player.getHitboxTop())){
-                    lives--;
-                    Log.d("Intersects", "You got Hit");
-                    this.player.setxPosition(50);
-                    this.player.setyPosition(level4 - this.playerHeight.getImage().getHeight());
-                    this.player.updateHitboxBottom();
-                    this.player.updateHitBoxTop();
-                    isMoving = 0;
+
+            }
+
+            //detecting player collision with egg
+            for(int i = 0; i<eggs.size();i++) {
+
+                //detecting player collision with egg
+                if (player.getHitboxTop().intersect(eggs.get(i).getHitbox())
+                        || player.getHitboxBottom().intersect(eggs.get(i).getHitbox())) {
+                    eggs.remove(i);
+                    eggTime.remove(i);
+                    sound.getCollectEgg();
+                    score++;
+
                 }
             }
 
             //Removing egg after 10 seconds and creating cat again
             for(int i =0; i<eggs.size();i++)
             {
+
                 if((int) System.currentTimeMillis() - eggTime.get(i)  > 10000)
                 {
                     makeEnemy(eggs.get(i).getxPosition(),eggs.get(i).getyPosition());
@@ -381,7 +402,17 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     eggTime.remove(i);
                 }
             }
+
+            //MOVING DOG (TEMP CODE)
+            dog.setxPosition(dog.getxPosition() + 20);
+            if(dog.getxPosition()> this.screenWidth)
+            {
+                dog.setxPosition( - (dog.image.getWidth()));
+            }
+            dog.updateHitbox();
+
         }
+
 
         //player control
         if (isMoving != 0) {
@@ -394,7 +425,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 if (this.player.getxPosition() >= this.screenWidth) {
                     this.player.setxPosition((0 - this.player.getImage().getWidth()));
                 }
-                this.player.setxPosition(this.player.getxPosition() + 50);
+                this.player.setxPosition(this.player.getxPosition() + 30);
                 this.player.updateHitboxBottom();
                 this.player.updateHitBoxTop();
                 Log.d("Moving", "X == " + this.player.getxPosition());
@@ -402,7 +433,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 if ((this.player.getxPosition() + this.player.getImage().getWidth()) <= 0) {
                     this.player.setxPosition(this.screenWidth);
                 }
-                this.player.setxPosition(this.player.getxPosition() - 50);
+                this.player.setxPosition(this.player.getxPosition() - 30);
                 this.player.updateHitboxBottom();
                 this.player.updateHitBoxTop();
                 Log.d("Moving", "Left");
@@ -467,18 +498,16 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
         if(this.player.getyPosition() != newY && playerUp == true)
         {
 
-            Log.d("LevelNumber", " level = " + playerLevelNumber);
+            this.player.setyPosition(this.player.getyPosition() - 250);
 
 
-                if (this.player.getyPosition() >= newY) {
-                    this.player.setyPosition(this.player.getyPosition() - 100);
-                } else {
-                    this.player.setyPosition(newY);
-                    playerUp = false;
-                }
-
+            if(this.player.getyPosition() <= newY){
+                this.player.setyPosition(newY);
+                playerUp = false;
+            }
             this.player.updateHitboxBottom();
             this.player.updateHitBoxTop();
+
         }
 
         //MOVING PLAYER DOWN
@@ -488,21 +517,20 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             Log.d("LevelNumber", " level = " + playerLevelNumber);
 
-                if (this.player.getyPosition() <= newY) {
-                    this.player.setyPosition(this.player.getyPosition() + 100);
-                }
-                else if(this.player.getyPosition() > newY){
-                    this.player.setyPosition(0);
-                    this.player.setyPosition(this.player.getyPosition() + 100);
-                }
-                     if((this.player.getyPosition() >=0) && (this.player.getyPosition() >= newY) ) {
-                    this.player.setyPosition(newY);
-                    playerDown = false;
-                }
+            if (this.player.getyPosition() <= newY) {
+                this.player.setyPosition(this.player.getyPosition() + 250);
+            }
+            else if(this.player.getyPosition() > newY){
+                this.player.setyPosition(0);
+                this.player.setyPosition(this.player.getyPosition() + 250);
+            }
+            if((this.player.getyPosition() >=0) && (this.player.getyPosition() >= newY) ) {
+                this.player.setyPosition(newY);
+                playerDown = false;
+            }
             this.player.updateHitboxBottom();
             this.player.updateHitBoxTop();
         }
-
         //this.player.setyPosition(newY);
 
         // -------------------------------------
@@ -541,7 +569,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             //building levels
             //level image variable
-            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.brick_block);
+            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.level);
             level = Bitmap.createScaledBitmap(level, screenWidth, 100, false);
             p.setColor(Color.GREEN);
             //adding level to canvas
@@ -558,11 +586,13 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             p.setColor(Color.BLUE);
             p.setStyle(Paint.Style.STROKE);
             p.setStrokeWidth(5);
-            canvas.drawRect(this.player.getHitboxBottom(),p);
+            player.getHitboxTop();
+            // canvas.drawRect(this.player.getHitboxBottom(),p);
             p.setColor(Color.RED);
             p.setStyle(Paint.Style.STROKE);
             p.setStrokeWidth(5);
-            canvas.drawRect(this.player.getHitboxTop(),p);
+            player.getHitboxBottom();
+            // canvas.drawRect(this.player.getHitboxTop(),p);
 
             // ------------------------------
             // CREATING ENEMIES
@@ -580,7 +610,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
                 //setting random position for the enemies after every 2 seconds (max enemies limit = 8)
 
-                if (enemy_Counter < 8)
+                if (enemy_Counter < 6)
                 {
                     makeEnemy((int) ((Math.random() * (((this.screenWidth - this.demo.image.getWidth()) - 0) + 1)) + 0),
                             this.randomLevel() - this.demo.image.getHeight());
@@ -600,24 +630,25 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                     p.setColor(Color.RED);
                     p.setStyle(Paint.Style.STROKE);
                     p.setStrokeWidth(5);
-                    canvas.drawRect(t.getHitbox(),p);
+                    t.getHitbox();
+                    // canvas.drawRect(t.getHitbox(),p);
                 }
             }
 
-            // ------------------------------
-            // CREATING DOG
-            // ------------------------------
-//            canvas.drawBitmap(dog.getImage(),dog.getxPosition(),dog.getyPosition(),p);
-//            canvas.drawRect(dog.getHitbox(),p);
+
 
             //CREATING EGGS
             for(int i =0; i< eggs.size(); i++) {
                 Sprite eg = eggs.get(i);
                 canvas.drawBitmap(eg.getImage(), eg.getxPosition(), eg.getyPosition(), p);
+                p.setColor(Color.RED);
+                p.setStyle(Paint.Style.STROKE);
+                p.setStrokeWidth(5);
+                eg.getHitbox();
+                // canvas.drawRect(eg.getHitbox(),p);
             }
 
             //@TODO: Draw game statistics (lives, score, etc)
-
             // huds background
             p.setStyle(Paint.Style.FILL);
             // argb == alpha, red, green, blue where alpha is used for transparency
@@ -646,6 +677,18 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
             int scoreX = (int) (hudBg.left + ((hudBg.right - hudBg.left) / 2));
             // Displaying Lives Status
             this.canvas.drawText(("Score: " + score), scoreX, hudBg.bottom-25, p);
+
+            //----------------
+
+            if(lives == 0)
+            {
+                youLose();
+                startGame();
+            }
+            if(score == 6)
+            {
+                youWin();
+            }
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
