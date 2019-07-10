@@ -57,7 +57,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
     int eggX = 0;
     int eggY = 0;
     Sprite demo;
-    Sprite dog;
     Sprite egg;
     Sprite eggDemo;
     Sounds sound;
@@ -120,7 +119,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
         //cat sprite to get the width and height properties
         demo = new Sprite(getContext(), 100, 200, R.drawable.cat);
-        dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.dogbig);
+       // dog = new Sprite(getContext(),400,level2 - demo.image.getHeight(),R.drawable.dogbig);
         eggDemo = new Sprite(getContext(),0,0,R.drawable.egg);
         //creating instance of Sounds class
         sound = new Sounds(context);
@@ -403,13 +402,6 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
                 }
             }
 
-            //MOVING DOG (TEMP CODE)
-            dog.setxPosition(dog.getxPosition() + 20);
-            if(dog.getxPosition()> this.screenWidth)
-            {
-                dog.setxPosition( - (dog.image.getWidth()));
-            }
-            dog.updateHitbox();
 
         }
 
@@ -569,7 +561,7 @@ public class GameEngine extends SurfaceView implements Runnable, GestureDetector
 
             //building levels
             //level image variable
-            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.level);
+            Bitmap level = BitmapFactory.decodeResource(getResources(), R.drawable.brick_block);
             level = Bitmap.createScaledBitmap(level, screenWidth, 100, false);
             p.setColor(Color.GREEN);
             //adding level to canvas
